@@ -1,0 +1,12 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const e=require('../js/engine.js');
+const running=()=>({...e.create(),status:'playing',food:{x:1,y:1}});
+test('food is always outside the body and full board returns null',()=>{let s=e.create();for(let i=0;i<100;i++)assert(!s.snake.some(p=>JSON.stringify(p)===JSON.stringify(e.foodFor(s.snake))));const full=[];for(let x=1;x<=18;x++)for(let y=1;y<=18;y++)full.push({x,y});assert.equal(e.foodFor(full),null);});
+test('reverse and multiple turns in a tick are rejected',()=>{let s=running();e.turn(s,'left');assert.equal(s.pending,null);e.turn(s,'up');e.turn(s,'left');e.step(s);assert.deepEqual(s.snake[0],{x:9,y:9});});
+test('all 18 cells are playable, leaving board ends game',()=>{let s=running();s.snake=[{x:17,y:5}];e.step(s);assert.equal(s.status,'playing');e.step(s);assert.equal(s.status,'over');});
+test('eating grows exactly one segment and increments score',()=>{let s=running();s.food={x:10,y:10};e.step(s);assert.equal(s.score,1);assert.equal(s.snake.length,4);assert(!s.snake.some(p=>p.x===s.food.x&&p.y===s.food.y));});
+test('moving into vacated tail is allowed',()=>{let s=running();s.snake=[{x:2,y:2},{x:2,y:3},{x:3,y:3},{x:3,y:2}];e.step(s);assert.equal(s.status,'playing');});
+test('moving into body ends game',()=>{let s=running();s.snake=[{x:2,y:2},{x:3,y:2},{x:3,y:3},{x:2,y:3}];e.step(s);assert.equal(s.status,'over');});
+test('paused game does not move',()=>{let s=running();s.status='paused';const before=JSON.stringify(s);e.step(s);assert.equal(JSON.stringify(s),before);});
+test('last tooth wins instead of trying to spawn on full board',()=>{let s=running();s.snake=[];for(let y=1;y<=18;y++)for(let x=1;x<=18;x++)if(x!==18||y!==18)s.snake.push({x,y});s.snake.reverse();s.food={x:18,y:18};e.step(s);assert.equal(s.status,'won');assert.equal(s.food,null);});

@@ -1,19 +1,25 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasminha Quer Dentes</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#141124"><meta name="description" content="Um pequeno fantasma, um grande sonho: colecionar dentes! Jogue grátis com teclado ou toque.">
+<title>Fantasminha Quer Dentes • Uma aventura de arrepiar</title>
+<link rel="icon" href="imagem/cabeca.png"><link rel="stylesheet" href="css/style.css">
+<script defer src="js/engine.js"></script><script defer src="js/index.js"></script>
 </head>
 <body>
-    <div class="body">
-        <div id="text"><p>Fantasminha Quer Dentes</p><br><h6>Ajude o Fantasminha a conseguir mais dentes</h6></div>
-        <div id="scoreBox">Pontos: 0</div>
-        <div id="hiscoreBox">Jogadas: 0</div>
-        <div id="board"></div>
-    </div>
-</body>
-<script src="js/index.js"></script>
-</html>
+<header><a class="brand" href="./"><img src="imagem/cabeca.png" alt=""> BOO! ARCADE</a><span class="edition">PEQUENOS SUSTOS, GRANDES SORRISOS</span><button id="sound" aria-pressed="false">Som: desligado</button></header>
+<main>
+<section class="intro"><span class="eyebrow">UMA AVENTURA DO OUTRO MUNDO</span><h1>Fantasminha<br>quer <em>dentes.</em></h1><p>Até um fantasma merece um sorriso.<br>Ajude o Boo a juntar dentinhos — sem esbarrar pelo caminho!</p>
+<div class="instructions"><h2>Como assombrar por aqui</h2><p><span>01</span> Pegue os dentes e aumente sua cauda.</p><p><span>02</span> Fuja das paredes e da própria cauda.</p><p><span>03</span> Bata seu recorde. Sorria. Repita.</p></div>
+<div class="keys"><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>ou WASD para mover<br>Espaço para pausar</span></div>
+<p class="note">Feito de nostalgia, sustinhos e dentes.</p></section>
+<section class="game" aria-label="Jogo do fantasminha">
+<div class="scoreboard"><div><span>DENTINHOS</span><strong id="score">00</strong></div><div><span>SEU RECORDE</span><strong id="best">00</strong></div><span class="badge" id="badge">VAMOS JOGAR?</span></div>
+<div class="arena"><div id="board" role="img" aria-label="Tabuleiro do jogo"></div><div id="overlay"><img src="imagem/cabeca.png" alt="Boo, o fantasminha"><h2 id="title">Um sorriso para o Boo?</h2><p id="message">Pegue seu primeiro dentinho e comece a aventura.</p><button class="primary" id="start">Vamos jogar <span>→</span></button></div></div>
+<div class="toolbar"><label for="difficulty">Ritmo <select id="difficulty"><option value="6">Tranquilo</option><option value="10" selected>Animado</option><option value="15">Assombrado</option></select></label><button id="pause" disabled>Pausar</button><button id="restart">Recomeçar</button></div>
+<div class="touch" aria-label="Controles de direção"><button data-dir="up" aria-label="Mover para cima">↑</button><div><button data-dir="left" aria-label="Mover para esquerda">←</button><button data-dir="down" aria-label="Mover para baixo">↓</button><button data-dir="right" aria-label="Mover para direita">→</button></div></div>
+<p class="hint">No celular, use as setas ou deslize no tabuleiro.</p><p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+</section>
+</main><footer><span>FANTASMINHA QUER DENTES <span class="star">✦</span> EDIÇÃO RENOVADA</span><a href="https://github.com/SouBeatrizKaroline/CtrlAltJam2023_DesafioBoo_FantasminhaQuerDentes">Criado no CTRL ALT Boo · Ver original ↗</a></footer>
+</body></html>

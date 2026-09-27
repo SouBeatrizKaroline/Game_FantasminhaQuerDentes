@@ -1,149 +1,23 @@
-// Game Constants & Variables
-let inputDir = {x: 0, y: 0}; 
-const foodSound = new Audio('music/food.mp3');
-const gameOverSound = new Audio('music/gameover.mp3');
-const moveSound = new Audio('');
-const musicSound = new Audio('music/music.mp3');
-let speed = 19;
-let score = 0;
-let lastPaintTime = 0;
-let snakeArr = [
-    {x: 13, y: 15}
-];
-
-food = {x: 6, y: 7};
-
-// Game Functions
-function main(ctime) {
-    window.requestAnimationFrame(main);
-    // console.log(ctime)
-    if((ctime - lastPaintTime)/1000 < 1/speed){
-        return;
-    }
-    lastPaintTime = ctime;
-    gameEngine();
-}
-
-function isCollide(snake) {
-    // If you bump into yourself 
-    for (let i = 1; i < snakeArr.length; i++) {
-        if(snake[i].x === snake[0].x && snake[i].y === snake[0].y){
-            return true;
-        }
-    }
-    // If you bump into the wall
-    if(snake[0].x >= 18 || snake[0].x <=0 || snake[0].y >= 18 || snake[0].y <=0){
-        return true;
-    }
-        
-    return false;
-}
-
-function gameEngine(){
-    // Part 1: Updating the snake array & Food
-    if(isCollide(snakeArr)){
-        gameOverSound.play();
-        musicSound.pause();
-        inputDir =  {x: 0, y: 0}; 
-        alert("O fantasminha quebrou os dentes");
-        snakeArr = [{x: 13, y: 15}];
-        musicSound.play();
-        score = 0; 
-    }
-
-    // If you have eaten the food, increment the score and regenerate the food
-    if(snakeArr[0].y === food.y && snakeArr[0].x ===food.x){
-        foodSound.play();
-        score += 1;
-        if(score>hiscoreval){
-            hiscoreval = score;
-            localStorage.setItem("hiscore", JSON.stringify(hiscoreval));
-            hiscoreBox.innerHTML = "HiScore: " + hiscoreval;
-        }
-        scoreBox.innerHTML = "Score: " + score;
-        snakeArr.unshift({x: snakeArr[0].x + inputDir.x, y: snakeArr[0].y + inputDir.y});
-        let a = 2;
-        let b = 16;
-        food = {x: Math.round(a + (b-a)* Math.random()), y: Math.round(a + (b-a)* Math.random())}
-    }
-
-    // Moving the snake
-    for (let i = snakeArr.length - 2; i>=0; i--) { 
-        snakeArr[i+1] = {...snakeArr[i]};
-    }
-
-    snakeArr[0].x += inputDir.x;
-    snakeArr[0].y += inputDir.y;
-
-    // Part 2: Display the snake and Food
-    // Display the snake
-    board.innerHTML = "";
-    snakeArr.forEach((e, index)=>{
-        snakeElement = document.createElement('div');
-        snakeElement.style.gridRowStart = e.y;
-        snakeElement.style.gridColumnStart = e.x;
-
-        if(index === 0){
-            snakeElement.classList.add('head');
-        }
-        else{
-            snakeElement.classList.add('snake');
-        }
-        board.appendChild(snakeElement);
-    });
-    // Display the food
-    foodElement = document.createElement('div');
-    foodElement.style.gridRowStart = food.y;
-    foodElement.style.gridColumnStart = food.x;
-    foodElement.classList.add('food')
-    board.appendChild(foodElement);
-
-
-}
-
-
-// Main logic starts here
-musicSound.play();
-let hiscore = localStorage.getItem("hiscore");
-if(hiscore === null){
-    hiscoreval = 0;
-    localStorage.setItem("hiscore", JSON.stringify(hiscoreval))
-}
-else{
-    hiscoreval = JSON.parse(hiscore);
-    hiscoreBox.innerHTML = "HiScore: " + hiscore;
-}
-
-window.requestAnimationFrame(main);
-window.addEventListener('keydown', e =>{
-    inputDir = {x: 0, y: 1} // Start the game
-    moveSound.play();
-    switch (e.key) {
-        case "ArrowUp":
-            console.log("ArrowUp");
-            inputDir.x = 0;
-            inputDir.y = -1;
-            break;
-
-        case "ArrowDown":
-            console.log("ArrowDown");
-            inputDir.x = 0;
-            inputDir.y = 1;
-            break;
-
-        case "ArrowLeft":
-            console.log("ArrowLeft");
-            inputDir.x = -1;
-            inputDir.y = 0;
-            break;
-
-        case "ArrowRight":
-            console.log("ArrowRight");
-            inputDir.x = 1;
-            inputDir.y = 0;
-            break;
-        default:
-            break;
-    }
-
-});
+'use strict';
+const $=id=>document.getElementById(id), engine=window.BooEngine;
+let state=engine.create(),last=0,enabled=false,best=0,touchStart=null;
+try{best=Math.max(0,Number(localStorage.getItem('boo-best')||localStorage.getItem('hiscore'))||0);}catch{}
+const music=new Audio('music/music.mp3'),foodAudio=new Audio('music/food.mp3'),overAudio=new Audio('music/gameover.mp3');music.loop=true;music.volume=.25;foodAudio.volume=.5;overAudio.volume=.4;
+function play(audio){if(enabled){audio.currentTime=0;audio.play().catch(()=>{});}}
+function updateMusic(){if(enabled&&state.status==='playing')music.play().catch(()=>{});else music.pause();}
+function render(){const fragment=document.createDocumentFragment();state.snake.forEach((part,i)=>cell(part,i?'snake':'head',fragment));if(state.food)cell(state.food,'food',fragment);$('board').replaceChildren(fragment);$('score').textContent=String(state.score).padStart(2,'0');$('best').textContent=String(best).padStart(2,'0');$('board').setAttribute('aria-label',`Tabuleiro: ${state.score} dentes coletados.`);}
+function cell(point,kind,parent){const el=document.createElement('div');el.className=kind;el.style.gridColumnStart=point.x;el.style.gridRowStart=point.y;parent.append(el);}
+function sync(){const active=state.status==='playing',paused=state.status==='paused';$('overlay').hidden=active;$('pause').disabled=!active&&!paused;$('pause').textContent=paused?'Continuar':'Pausar';$('difficulty').disabled=active||paused;$('badge').textContent=active?'EM BUSCA DE DENTES':paused?'PAUSA PARA RESPIRAR':'VAMOS JOGAR?';updateMusic();}
+function start(){state=engine.create();state.status='playing';last=performance.now();sync();render();$('announcement').textContent='Partida iniciada. Use as setas ou WASD.';}
+function pause(){if(state.status==='playing'){state.status='paused';$('title').textContent='Boo está descansando';$('message').textContent='Seu sorriso pode esperar um pouquinho.';$('start').textContent='Continuar';}else if(state.status==='paused'){state.status='playing';last=performance.now();}sync();}
+function finish(){play(overAudio);$('title').textContent=state.status==='won'?'Um sorriso completo!':'Ops! Um pequeno susto.';$('message').textContent=`Você juntou ${state.score} dentinho${state.score===1?'':'s'}. Que tal tentar mais uma vez?`;$('start').textContent='Jogar de novo';$('announcement').textContent=$('message').textContent;sync();$('start').focus({preventScroll:true});}
+function frame(now){if(state.status==='playing'&&now-last>=1000/Math.min(22,Number($('difficulty').value)+Math.floor(state.score/5))){last=now;const previous=state.score;engine.step(state);if(state.score>previous){play(foodAudio);if(state.score>best){best=state.score;try{localStorage.setItem('boo-best',String(best));}catch{}}$('announcement').textContent=`${state.score} dentes coletados.`;}render();if(state.status==='over'||state.status==='won')finish();}requestAnimationFrame(frame);}
+$('start').addEventListener('click',()=>state.status==='paused'?pause():start());$('restart').addEventListener('click',start);$('pause').addEventListener('click',pause);
+$('sound').addEventListener('click',()=>{enabled=!enabled;$('sound').textContent=enabled?'Som: ligado':'Som: desligado';$('sound').setAttribute('aria-pressed',String(enabled));updateMusic();});
+const keys={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
+window.addEventListener('keydown',event=>{if(event.target.matches('select,input,textarea'))return;const direction=keys[event.key]||keys[event.key.toLowerCase()];if(direction){event.preventDefault();engine.turn(state,direction);}else if(event.code==='Space'&&!event.target.matches('button,a')){event.preventDefault();if(!event.repeat)pause();}else if(event.key==='Escape'&&state.status==='playing')pause();});
+document.querySelectorAll('[data-dir]').forEach(button=>button.addEventListener('click',()=>engine.turn(state,button.dataset.dir)));
+$('board').addEventListener('pointerdown',event=>{touchStart={x:event.clientX,y:event.clientY};$('board').setPointerCapture(event.pointerId);});
+$('board').addEventListener('pointerup',event=>{if(!touchStart)return;const dx=event.clientX-touchStart.x,dy=event.clientY-touchStart.y;touchStart=null;if(Math.max(Math.abs(dx),Math.abs(dy))<15)return;engine.turn(state,Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up');});
+$('board').addEventListener('pointercancel',()=>touchStart=null);document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.status==='playing')pause();});
+render();sync();requestAnimationFrame(frame);

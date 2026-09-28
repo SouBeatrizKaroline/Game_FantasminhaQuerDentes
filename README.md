@@ -2,6 +2,16 @@
 
 Um pequeno fantasma, um grande sonho: colecionar dentes! Jogo de cobrinha em HTML, CSS e JavaScript, com a arte e os sons do projeto original.
 
+## Imagens do jogo
+
+### No computador
+
+![Tela inicial do Fantasminha Quer Dentes no computador, com instruções, placar e tabuleiro](imagem/readme/desktop.png)
+
+### No celular
+
+<img src="imagem/readme/mobile.png" alt="Fantasminha Quer Dentes no celular, com layout vertical e controles de direção por toque" width="320">
+
 ## Jogar
 Abra `index.html` no navegador. Não precisa instalar dependências nem compilar.
 
